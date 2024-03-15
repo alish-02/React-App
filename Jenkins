@@ -1,0 +1,54 @@
+pipeline {
+    agent any
+    
+    stages {
+        stage('Build') {
+            steps {
+                script {
+                    // Install Node.js and npm
+                    node {
+                        stage('Install Dependencies') {
+                            sh 'npm install'
+                        }
+                    }
+                }
+            }
+        }
+        stage('Test') {
+            steps {
+                script {
+                    node {
+                        stage('Run Tests') {
+                            sh 'npm test'
+                        }
+                    }
+                }
+            }
+        }
+        stage('Build and Deploy') {
+            steps {
+                script {
+                    node {
+                        stage('Build Production') {
+                            sh 'npm run build'
+                        }
+                    }
+                }
+                parallel {
+                    stage('Deploy to Staging') {
+                        steps {
+                            sh 'echo "Deploying to Staging..."'
+                            // Add deployment commands for staging environment
+                        }
+                    }
+                    stage('Deploy to Production') {
+                        steps {
+                            sh 'echo "Deploying to Production..."'
+                            // Add deployment commands for production environment
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
